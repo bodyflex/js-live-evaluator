@@ -22,91 +22,46 @@
     height: 100vh;
   }
 
-  #editor, pre {
+  #editor, #inspector {
     flex: 1;
-    height: 100%;
+    height: 100% !important;
     box-sizing: border-box;
   }
 
-  pre {
-    background: #eee;
-    font-size: 1.25em;
-    padding: 1em;
+  #inspector {
+    background: #efefef;
     transition: opacity 0.2s;
   }
 
-  #error {
-    background: #ffcfcf;
-    padding: 1em;
-    transition: opacity 50ms;
-    font-weight: bold;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999999;
-    opacity: 0;
+  .inspector-item {
+    padding: 0.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    margin: 0.5rem 1rem;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+  }
+
+  .inspector-item:hover {
+    background: rgb(255, 245, 232);
+  }
+
+  .inspector-item li {
+    flex: 1;
+    background-color: transparent !important;
+  }
+
+  #cdn-input {
+    width: 100%;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+    box-sizing: border-box;
   }
 </style>
 <body>
-  <div id="content">
-    <div id="editor"></div>
-    <pre></pre>
-  </div>
-  <p id="error"></p>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/ace.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/mode-javascript.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.4/theme-chrome.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
-  <script>
-    const editor = ace.edit("editor");
-    editor.setTheme("ace/theme/chrome");
-    editor.getSession().setMode("ace/mode/javascript");
-
-    const output = document.querySelector('pre');
-    const error = document.querySelector('#error');
-
-    let timeout;
-    let newResult = '';
-
-    const log = message => {
-      newResult += `LOG: ${varToString(message)}\n`;
-    };
-
-    const varToString = variable => {
-      if ('' + variable === '' || '' + variable === '[object Object]') {
-        return JSON.stringify(variable, null, '  ');
-      } else {
-        return variable;
-      }
-    };
-
-    editor.getSession().on('change', () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        try {
-          newResult = '';
-          const result = eval(editor.getValue());
-          newResult += 'RETURN: ' + varToString(result);
-          output.innerHTML = newResult;
-          setError('');
-        } catch (e) {
-          console.error(e);
-          setError(e);
-        }
-      }, 100);
-    });
-
-    function setError(e) {
-      if (e) {
-        error.innerHTML = `Error: ${e.message}`;
-        error.style.opacity = 0.8;
-        output.style.opacity = 0.4;
-      } else {
-        error.style.opacity = 0;
-        output.style.opacity = 1;
-      }
-    }
-  </script>
+  <div id="root"></div>
+  <script src="dist/main.js"></script>
 </body>
 </html>
